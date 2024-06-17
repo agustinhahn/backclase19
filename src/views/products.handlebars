@@ -1,0 +1,18 @@
+<div class="containerRealTimeProd">
+<h2 class="titleDinamic">Lista de productos estatica</h2>
+<hr>
+{{#each response}}
+    <div class="containerProds">
+    <p class="titleProds">id: {{this._id}}</p>
+    <p class="titleProds">Name: {{this.title}}</p>
+    {{!-- <p class="propsProds">Id: {{this.id}}</p> --}}
+    <p class="propsProds">Code: {{this.code}}</p>
+    <p class="propsProds">Category: {{this.category}}</p>
+    <p class="propsProds">Description: {{this.description}}</p>
+    <p class="propsProds">Stock: {{this.stock}}</p>
+    <p class="propsProds">Price: ${{this.price}}</p>
+    </div>
+    <hr>
+    <br />
+{{/each}}
+</div>
