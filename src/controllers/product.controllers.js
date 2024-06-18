@@ -8,7 +8,6 @@ export const getAllProducts = async (req, res, next) => {
         const hasTitle = title ? `&title=${title}` : "" ;
         const hasSort = sort ? `&sort=${sort}` : "" ;
         let products = await service.getAll(page, limit, title, sort, category);
-
         const nextLink = products.hasNextPage
             ? `http://localhost:8080/products?limit=${products.limit}&page=${products.nextPage}${hasTitle}${hasSort}`
             : null;
@@ -30,8 +29,8 @@ export const getAllProducts = async (req, res, next) => {
         };
 
         if(!products) res.status(404).json( { msg: "Product not found"});
-        else res.status(200).json(response);
-        // else res.render('products',{products})
+        else res.render('products',response)
+        // else res.status(200).json(response);
     } catch (error) {
         next(error.message);
     }

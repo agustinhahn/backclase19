@@ -7,8 +7,27 @@ import { configureSocket} from './socketConfig.js';
 import productsRouter from './routes/product.router.js';
 import cartsRouter from './routes/cart.router.js';
 import chatRouter from './routes/chat.router.js';
+import initialRouter from "./routes/views.router.js"
+import userRouter from "./routes/user.router.js"
 import { __dirname } from './utils.js';
 import { engine } from 'express-handlebars';
+import MongoStore from 'connect-mongo';
+import session from 'express-session';
+import cookieParser from 'cookie-parser';
+import { validateLogin } from './middlewares/validateLogin.js';
+
+
+const storeConfig = {
+    store: MongoStore.create({
+        mongoUrl: process.env.MONGO_URL,
+        crypto: { secret: process.env.SECRET_KEY },
+        ttl: 180,
+    }),
+    secret: process.env.SECRET_KEY,
+    resave: true,
+    saveUninitialized: true,
+    cookie: { maxAge: 180000 }
+};
 
 
 //express
@@ -19,6 +38,7 @@ const PORT = 8080;
 app.engine("handlebars", engine());
 app.set("view engine", "handlebars");
 app.set("views", __dirname + '/views');
+
 
 //crear servidor http
 const httpServer = app.listen(PORT, () => { 
@@ -31,13 +51,17 @@ configureSocket(httpServer);
 //Configuracion de middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
+app.use(session(storeConfig));
 app.use('/', express.static(__dirname + '/public'));
 //morgan
 app.use(morgan('dev'));
 
 //Configurar rutas
-app.use("/products", productsRouter);
-app.use("/carts", cartsRouter);
+app.use('/', initialRouter); //login , register y demas.
+app.use('/users', userRouter);
+app.use("/products", validateLogin, productsRouter);
+app.use("/carts",validateLogin, cartsRouter);
 app.use("/chat", chatRouter)
 
 //middleware de manejo de errores
