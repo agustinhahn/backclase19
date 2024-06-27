@@ -1,66 +1,35 @@
-import UserDao from "../dao/mongodb/user.dao.js"
-import { UserModel } from "../dao/mongodb/models/user.model.js"
-const userDao = new UserDao(UserModel);
+import * as services from "../services/user.services.js";
 
-export const login = async (req, res) => {
+export const registerResponse = (req, res, next) => {
   try {
-    const { email, password } = req.body;
-    const user = await userDao.login(email, password);
-    if (!user) res.status(401).json({ msg: "No estas autorizado" });
-    //res.redirect('/error-login)
-    else {
-      req.session.email = email;
-      req.session.password = password;
-      req.session.info = { loggedIn: true, contador: 0 };
-      res.redirect("/profile");
-    }
+    res.json({
+      msg: 'Register OK',
+      session: req.session
+    })
   } catch (error) {
-    throw new Error(error);
+    next(error);
   }
 };
 
-export const register = async (req, res) => {
+export const loginResponse = async (req, res, next) => {
+  //req.session.passport.user
   try {
-    console.log(req.body);
-    const { email, password } = req.body;
-    if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
-      const user = await userDao.register({
-        ...req.body,
-        role: "admin",
-      });
-      if (!user) res.status(401).json({ msg: "user exist!" });
-      else res.redirect("/login");
-    }
-    else{
-      const user = await userDao.register(req.body);
-      if (!user) res.status(401).json({ msg: "user exist!" });
-      else res.redirect("/login");
-    }
+    let id = null;
+    if(req.session.passport && req.session.passport.user) id = req.session.passport.user;
+    const user = await services.getUserById(id);
+    if(!user) res.status(401).json({ msg: 'Error de autenticacion' });
+    const { first_name, last_name, email, age, role } = user;
+    res.json({
+      msg: 'LOGIN OK!',
+      user: {
+        first_name,
+        last_name,
+        email,
+        age,
+        role
+      }
+    })
   } catch (error) {
-    throw new Error(error);
+    next(error);
   }
-};
-
-export const visit = (req, res) => {
-  if (!req.session.info) {
-    req.session.info = { loggedIn: true, contador: 0 };
-  } else {
-    req.session.info.contador++;
-  }
-  res.json({
-    msg: `${req.session.email} ha visitado el sitio ${req.session.info.contador} veces`,
-  });
-};
-
-export const infoSession = (req, res) => {
-  res.json({
-    session: req.session,
-    sessionId: req.sessionID,
-    cookies: req.cookies,
-  });
-};
-
-export const logout = (req, res) => {
-  req.session.destroy();
-  res.send("session destroy");
 };

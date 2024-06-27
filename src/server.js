@@ -15,6 +15,8 @@ import MongoStore from 'connect-mongo';
 import session from 'express-session';
 import cookieParser from 'cookie-parser';
 import { validateLogin } from './middlewares/validateLogin.js';
+import passport from 'passport';
+import "./passport/local-strategy.js"
 
 
 const storeConfig = {
@@ -53,6 +55,12 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(session(storeConfig));
+
+// antes de las rutas
+app.use(passport.initialize())
+app.use(passport.session())
+
+
 app.use('/', express.static(__dirname + '/public'));
 //morgan
 app.use(morgan('dev'));

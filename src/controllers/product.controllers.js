@@ -29,8 +29,8 @@ export const getAllProducts = async (req, res, next) => {
         };
 
         if(!products) res.status(404).json( { msg: "Product not found"});
-        else res.render('products',response)
-        // else res.status(200).json(response);
+        // else res.render('realtimeproducts',response)
+        else res.status(200).json(response);
     } catch (error) {
         next(error.message);
     }
