@@ -29,10 +29,7 @@ const signUp = async(req, email, password, done) => {
 //logica login
 const login = async(req,email,password,done) => {
     try {
-        console.log(req.body)
         const userLogin = await services.login({email, password})
-        console.log(email)
-        console.log(userLogin)
         if(!userLogin) return done(null,false,{msg:"error autenticacion"})
         return done(null, userLogin)
     } catch (error) {

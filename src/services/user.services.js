@@ -3,48 +3,39 @@ import { UserModel } from "../dao/mongodb/models/user.model.js"
 import { createHash, isValidPassword } from "../utils.js";
 const userDao = new UserDao(UserModel);
 
-export const login = async (req, res) => {
+export const login = async (user) => {
     try {
-        console.log("hola desde services")
-        console.log(req.body)
-        const { email, password } = req.body;
-        const user = await userDao.login(email);
-        if (!user) res.status(401).json({ msg: "autenticacion fallida" });
-        //res.redirect('/error-login)
-        if (isValidPassword(password, user)) {
-            req.session.email = email;
-            req.session.info = { loggedIn: true, contador: 0 };
-            res.redirect("/profile");
-        }
-        else {
-            res.status(401).json({ msg: "autenticacion fallida" });
-        }
+        const { email, password } = user;
+        const userExist = await getUserByEmail(email);
+        if (!userExist) return null;
+        const passValid = isValidPassword(password, userExist);
+        if (!passValid) return null;
+        return userExist;
     } catch (error) {
         throw new Error(error);
     }
 };
 
-export const register = async (req, res) => {
+export const register = async (user) => {
     try {
-        console.log(req.body);
-        const { email, password } = req.body;
-        if (email === "adminCoder@coder.com" && password === "adminCod3r123") {
-            const user = await userDao.register({
-                ...req.body,
-                password: createHash(password),
-                role: "admin",
-            });
-            if (!user) res.status(401).json({ msg: "user exist!" });
-            else res.redirect("/login");
-        }
-        else {
-            const user = await userDao.register({
-                ...req.body,
-                password: createHash(password)
-            });
-            if (!user) res.status(401).json({ msg: "user exist!" });
-            else res.redirect("/login");
-        }
+        const { email, password } = user;
+        const existUser = await getUserByEmail(email);
+        if (!existUser) {
+            if (email === "adminCoder@coder.com" && password === "adminCoder123") {
+                const newUser = await userDao.register({
+                    ...user,
+                    password: createHash(password),
+                    role: "admin",
+                });
+                return newUser;
+            } else {
+                const newUser = await userDao.register({
+                    ...user,
+                    password: createHash(password),
+                });
+                return newUser;
+            }
+        } else return null;
     } catch (error) {
         throw new Error(error);
     }

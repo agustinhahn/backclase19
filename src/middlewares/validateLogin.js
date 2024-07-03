@@ -1,5 +1,5 @@
 export const validateLogin = (req, res, next) => {
-    console.log(req.session.info);
+    console.log(req.session);
     if (req.session.info && req.session.info.loggedIn) {
         next();
     } else {
