@@ -5,7 +5,6 @@ import {
     visit,
     infoSession,
 } from "../services/user.services.js";
-import { validateLogin } from "../middlewares/validateLogin.js";
 import {
     loginResponse, registerResponse
 } from "../controllers/user.controller.js"
@@ -15,9 +14,9 @@ import { checkAuth } from "../middlewares/jwt.js";
 
 router.post("/login", passport.authenticate('login'), loginResponse);
 router.post('/register', passport.authenticate('register'), registerResponse)
-router.get("/info", validateLogin, infoSession);
-router.get("/secret-endpoint", validateLogin, visit);
-// router.post("/logout", logout);
-router.get('/private', checkAuth, (req, res)=>res.json({ user: req.user }));
+router.get("/info", isAuth, infoSession);
+router.get("/secret-endpoint", isAuth, visit);
+router.post("/logout",isAuth, logout);
+// router.get('/private', checkAuth, (req, res) => res.json({ user: req.user }));
 
 export default router;

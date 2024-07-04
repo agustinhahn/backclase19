@@ -17,6 +17,7 @@ import cookieParser from 'cookie-parser';
 import { validateLogin } from './middlewares/validateLogin.js';
 import passport from 'passport';
 import "./passport/local-strategy.js"
+import { isAuth } from './middlewares/isAuth.js';
 
 
 const storeConfig = {
@@ -68,8 +69,8 @@ app.use(morgan('dev'));
 //Configurar rutas
 app.use('/', initialRouter); //login , register y demas.
 app.use('/users', userRouter);
-app.use("/products", validateLogin, productsRouter);
-app.use("/carts",validateLogin, cartsRouter);
+app.use("/products", isAuth, productsRouter);
+app.use("/carts",isAuth, cartsRouter);
 app.use("/chat", chatRouter)
 
 //middleware de manejo de errores

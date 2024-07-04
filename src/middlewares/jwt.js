@@ -18,6 +18,7 @@ export const checkAuth = async(req, res, next) => {
         if(!authHeader) res.status(403).json({ msg: 'Unhautorized' })
         //Bearer sfsdfsnfjknsdfkjnsd952340534ksdfk
         const token = authHeader.split(' ')[1];
+        console.log('Token:', token);
         const decode = jwt.verify(token, process.env.SECRET_KEY); 
         const user = await services.getUserById(decode.userId);
         if(!user) res.status(404).json({ msg: 'User not found' });
