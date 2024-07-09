@@ -31,6 +31,7 @@ const login = async(req,email,password,done) => {
     try {
         const userLogin = await services.login({email, password})
         if(!userLogin) return done(null,false,{msg:"error autenticacion"})
+            console.log(userLogin)
         return done(null, userLogin)
     } catch (error) {
         console.log(error)
@@ -55,6 +56,9 @@ passport.use('register', signUpStrategy)
 
 //recibe el usuario y se queda con el id
 passport.serializeUser((user,done)=>{
+    // console.log("hola vine a ver que pasa")
+    // console.log(user)
+    // console.log(user._id)
     done(null, user._id )
 })
 

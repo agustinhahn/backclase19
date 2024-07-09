@@ -33,3 +33,21 @@ export const loginResponse = async (req, res, next) => {
     next(error);
   }
 };
+
+export const githubResponse = async(req,res,next)=>{
+  try {
+    console.log(req.user)
+    const { first_name, last_name, email, role } = req.user;
+    res.json({
+      msg: 'LOGIN WITH GITHUB OK!',
+      user: {
+        first_name,
+        last_name,
+        email,
+        role
+      }
+    })
+  } catch (error) {
+    next(error)
+  }
+}

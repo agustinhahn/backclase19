@@ -18,6 +18,7 @@ import { validateLogin } from './middlewares/validateLogin.js';
 import passport from 'passport';
 import "./passport/local-strategy.js"
 import { isAuth } from './middlewares/isAuth.js';
+import "./passport/github-strategy.js"
 
 
 const storeConfig = {
